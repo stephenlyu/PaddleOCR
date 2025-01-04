@@ -27,6 +27,7 @@ class RecMetric(object):
         self.main_indicator = main_indicator
         self.is_filter = is_filter
         self.ignore_space = ignore_space
+        self.debug = kwargs.get('debug', False)
         self.eps = 1e-5
         self.reset()
 
@@ -48,7 +49,10 @@ class RecMetric(object):
             if self.is_filter:
                 pred = self._normalize_text(pred)
                 target = self._normalize_text(target)
-            norm_edit_dis += Levenshtein.normalized_distance(pred, target)
+            edit_dis = Levenshtein.normalized_distance(pred, target)
+            if self.debug:
+                print('RecMetric: %s\t%s\t%f' % (target, pred, edit_dis))
+            norm_edit_dis += edit_dis 
             if pred == target:
                 correct_num += 1
             all_num += 1
