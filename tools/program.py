@@ -305,7 +305,6 @@ def train(
                 if platform.system() == "Windows"
                 else len(train_dataloader)
             )
-
         for idx, batch in enumerate(train_dataloader):
             model.train()
             profiler.add_profiler_step(profiler_options)
@@ -490,6 +489,16 @@ def train(
                     best_model_dict.update(cur_metric)
                     best_model_dict["best_epoch"] = epoch
                     prefix = "best_accuracy"
+                    import glob
+                    import shutil
+                    files = glob.glob(os.path.join(save_model_dir, '%s.*' % prefix))
+                    if files:
+                        now = datetime.datetime.now()
+                        now_str = now.strftime("%Y-%m-%d-%H:%M:%S")
+                        backup_dir = os.path.join(save_model_dir, now_str)
+                        os.makedirs(backup_dir, exist_ok=True)
+                        for f in files:
+                            shutil.move(f, os.path.join(backup_dir, os.path.basename(f)))
                     if uniform_output_enabled:
                         export(
                             config,
